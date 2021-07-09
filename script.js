@@ -18,75 +18,90 @@ function computerPlay(){
     return computerSelection;
 }
 
-//plays a single round, takes playerSelection and computerSelection (case in-sensitive)
-//and returns a string declaring the winner
-function playRound(playerSelection, computerSelection){
+
+let playerWins = 0;
+let computerWins = 0;
+let draws = 0;
+
+//plays a single round
+function playRound(playerSelection){
 
     let winner;
+    const computerSelection = computerPlay();
 
     //player win conditions
     if( (playerSelection == 'rock' && computerSelection == 'scissors') || 
         (playerSelection == 'paper' && computerSelection == 'rock') || 
         (playerSelection == 'scissors' && computerSelection == 'paper') ){
 
-            winner = 'player';
+            playerWins++;
+            results.innerText = `player wins the round\n\nPlayer: ${playerSelection}----Computer: ${computerSelection}\n\n`;
+            results.innerText += `Results.......\nPlayer wins: ${playerWins}\nComputer wins: ${computerWins}\nDraws: ${draws}\n\n`;
+            
+            if(playerWins >= 5){
+                results.innerText = `\nCongratulations!! You have defeated the computer!`;
+                return;    
+            }
     }
     //computer win conditions
     else if((computerSelection == 'rock' && playerSelection == 'scissors') || 
             (computerSelection == 'paper' && playerSelection == 'rock') || 
             (computerSelection == 'scissors' && playerSelection == 'paper') ){
 
-                winner = 'computer';
+                computerWins++;
+                results.innerText = `computer wins the round\n\nPlayer: ${playerSelection}----Computer: ${computerSelection}\n\n`;
+                results.innerText += `Results.......\nPlayer wins: ${playerWins}\nComputer wins: ${computerWins}\nDraws: ${draws}\n\n`;
+
+                if(computerWins >= 5){
+                    results.innerText = `\nYou have been defeated... better luck next time`;
+                    return;
+                }
     }
     //draw
     else{
-        winner = 'draw';
+        draws++;
+        results.innerText = `round was a draw\n\nPlayer: ${playerSelection}----Computer: ${computerSelection}\n\n`;
+        results.innerText += `Results.......\nPlayer wins: ${playerWins}\nComputer wins: ${computerWins}\nDraws: ${draws}\n\n`;
     }
 
-    return winner;
 }
 
-//uses playRound() 5 times for best out of 5 game
-//keeps score and reports the winner (or draw) at the end
-function game(){
 
-    let rounds = 1;
-    let playerWins = 0;
-    let computerWins = 0;
-    let draws = 0;
+//rock, papper, scissors buttons
+const btn1 = document.createElement('button');
+btn1.innerText = 'Rock';
+btn1.setAttribute('id', 'rock');
 
-    while(rounds <=5 ){
+const btn2 = document.createElement('button');
+btn2.innerText = 'Paper';
+btn2.setAttribute('id', 'paper');
 
-        const computerSelection = computerPlay();
-        const playerSelection = prompt("What do you choose?", "rock, paper, scissors!").toLocaleLowerCase();
+const btn3 = document.createElement('button');
+btn3.innerText = 'Scissors';
+btn3.setAttribute('id', 'scissors');
 
-        if (playRound(playerSelection, computerSelection) == 'player'){
-            playerWins++;
-            console.log(`player wins the round\nPlayer: ${playerSelection}      Computer: ${computerSelection}`);
-        }
-        else if(playRound(playerSelection, computerSelection) == 'computer'){
-            computerWins++;
-            console.log(`computer wins the round\nPlayer: ${playerSelection}      Computer: ${computerSelection}`);
-        }
-        else{
-            draws++;
-            console.log(`round was a draw\nPlayer: ${playerSelection}      Computer: ${computerSelection}`);
-        }
+const results = document.createElement('div');
+results.setAttribute('id', 'results');
 
-        rounds++;
-    }
+//add buttons to container
+const container = document.querySelector('#container');
+container.appendChild(btn1);
+container.appendChild(btn2);
+container.appendChild(btn3);
+container.appendChild(results);
 
-    console.log(`Results.......\nPlayer wins: ${playerWins}\nComputer wins: ${computerWins}\nDraws: ${draws}`);
+//create nodelist of buttons
+const buttons = document.querySelectorAll('button');
 
-    if(playerWins > computerWins){
-        console.log(`Congratulations!! You have defeated the computer!`);
-    }
-    else if(playerWins < computerWins){
-        console.log(`You have been defeated... better luck next time`);
-    }
-    else{
-        console.log(`It appears you are equally matched!`);
-    }
-}
+//add event listener to each button
+buttons.forEach((button) => {
 
-game();
+    button.addEventListener('click', () => {
+        
+        (playerWins >= 5 || computerWins >= 5)?
+        results.innerText = `\nRefresh to play again`
+        : playRound(button.id);
+        
+    });
+
+});
